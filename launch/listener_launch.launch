@@ -1,6 +1,8 @@
 <launch>
   <node pkg="multimodal_writer" type="leapROSListener.py" name="leap_client"/>
-  <node pkg="multimodal_writer" type="leap_viz.py" name="leap_viz">
-  </node>
+  <node pkg="multimodal_writer" type="leap_viz.py" name="leap_viz"/>
+
+  <!-- <node pkg="multimodal_writer" type="wacomROSListener.py" name="wacom_client"/> -->
+
     <node pkg="tf" type="static_transform_publisher" name="world_tf" args="0 0 0 0 0 0 world leap 100" />
 </launch>

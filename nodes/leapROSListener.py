@@ -6,11 +6,13 @@ import numpy as np
 import rospy
 import tf
 from tf.transformations import quaternion_from_euler
-
+from visualization_msgs.msg import Marker, MarkerArray
 from std_msgs.msg import String
-from multimodal_writer.msg import HandInfoList, HandInfo, FingerInfo, FingersList
+from multimodal_writer.msg import HandInfoList, HandInfo, FingerInfo, FingersList, BonesList, BoneInfo
 
 TOPIC_HAND_INFO = "hands_topic"
+finger_names=["thumb","index","middle","ring","pinky"]
+bones_names=["metacarpal","proximal","intermediate","distal"]
 
 class FrameListener(Leap.Listener):
 
@@ -84,7 +86,7 @@ class FrameListener(Leap.Listener):
                     #finger positions!
                     finger_msg_list = FingersList()
                     #std::vector<leap_client::FingerInfo> finger_msg_list;
-                    fingers = hand.fingers;
+                    fingers = hand.fingers
                     if (len(fingers) > 0):
                         for j in range(0, len(fingers)):
                             finger_msg = FingerInfo()
@@ -94,6 +96,46 @@ class FrameListener(Leap.Listener):
                             finger_msg.header.stamp = stamp
                             finger_msg.hand_id = hand_msg.id
                             finger_msg.time_visible = fingers[j].time_visible
+                            finger_msg.type = fingers[j].type
+
+                            bone_msg_list = BonesList()
+
+                            for b in range(0, len(bones_names)):
+                                bone = fingers[j].bone(b)
+                                bone_msg = BoneInfo()
+                                bone_msg.header.frame_id = "bone"+str(b)
+
+                                bone_msg.id = bone
+                                bone_msg.header.stamp = stamp
+                                bone_msg.hand_id = hand_msg.id
+                                bone_msg.finger_id = finger_msg.id
+                                bone_msg.type = bone.type
+
+                                basis = bone.basis
+                                bone_msg.basis = [basis.x_basis, basis.y_basis, basis.z_basis]
+
+                                bone_msg.center.x = bone.center.x
+                                bone_msg.center.y = bone.center.y
+                                bone_msg.center.z = bone.center.z
+
+                                bone_msg.direction.x = bone.direction.x
+                                bone_msg.direction.y = bone.direction.y
+                                bone_msg.direction.z = bone.direction.z
+
+                                bone_msg.prev_joint.x = bone.prev_joint.x
+                                bone_msg.prev_joint.y = bone.prev_joint.y
+                                bone_msg.prev_joint.z = bone.prev_joint.z
+
+                                bone_msg.next_joint.x = bone.next_joint.x
+                                bone_msg.next_joint.y = bone.next_joint.y
+                                bone_msg.next_joint.z = bone.next_joint.z
+
+                                bone_msg.length = bone.length
+                                bone_msg.width = bone.width
+
+                                bone_msg_list.bones.append(bone_msg)
+
+
                             finger_msg.tip_position.x = fingers[j].tip_position.x
                             finger_msg.tip_position.y = fingers[j].tip_position.y
                             finger_msg.tip_position.z = fingers[j].tip_position.z

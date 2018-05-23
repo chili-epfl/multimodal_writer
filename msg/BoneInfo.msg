@@ -1,0 +1,12 @@
+std_msgs/Header header
+int32 hand_id
+int32 finger_id
+int32 id
+int32 type
+float32 length
+float32 width
+geometry_msgs/Vector3[] basis
+geometry_msgs/Vector3 center
+geometry_msgs/Vector3 direction
+geometry_msgs/Vector3 prev_joint
+geometry_msgs/Vector3 next_joint
